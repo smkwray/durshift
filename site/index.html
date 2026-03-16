@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark light" />
+  <title>DurShift — Treasury Buyback Duration Analysis</title>
+  <meta name="description" content="Interactive analysis of how U.S. Treasury buyback operations redistribute duration across the yield curve. Built from official public data." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,700;1,8..60,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div class="page-shell">
+
+    <!-- HERO -->
+    <header class="hero">
+      <div class="hero-copy">
+        <p class="kicker">Treasury Debt Management</p>
+        <h1>Where does <em>duration</em> go<br/>when Treasury buys it back?</h1>
+        <p class="lede">
+          Since April 2024 the U.S. Treasury has retired $321 billion in outstanding securities
+          through regular buyback operations. DurShift tracks every operation, computes the duration
+          impact, and shows that par volume tells a very different story than duration redistribution.
+        </p>
+      </div>
+      <nav class="hero-actions">
+        <a class="btn btn-outline" href="https://github.com/smkwray/durshift" target="_blank" rel="noopener">GitHub</a>
+        <button class="theme-toggle" id="theme-toggle" title="Toggle light/dark mode" aria-label="Toggle light/dark mode">
+          <svg class="icon-sun" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="2" fill="currentColor" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </nav>
+    </header>
+
+    <!-- STAT STRIP -->
+    <section class="stat-strip">
+      <div class="stat-card" id="card-par"><span class="stat-value">--</span><span class="stat-label">Par Retired</span></div>
+      <div class="stat-card" id="card-duration"><span class="stat-value">--</span><span class="stat-label">Duration-Dollars</span></div>
+      <div class="stat-card" id="card-operations"><span class="stat-value">--</span><span class="stat-label">Operations</span></div>
+      <div class="stat-card" id="card-cusips"><span class="stat-value">--</span><span class="stat-label">Unique CUSIPs</span></div>
+      <div class="stat-card" id="card-range"><span class="stat-value">--</span><span class="stat-label">Coverage</span></div>
+    </section>
+
+    <!-- MONTHLY VOLUME -->
+    <article class="panel">
+      <div class="panel-head">
+        <h2>Monthly buyback volume</h2>
+        <p class="panel-note">Par retired + duration-weighted volume</p>
+      </div>
+      <div class="chart-wrap" id="chart-monthly"></div>
+      <p class="chart-caption">The program ramped quickly from April 2024, with monthly par volumes reaching $30B+ by early 2025. The orange duration-$ line diverges sharply in months when long-dated liquidity-support operations are concentrated.</p>
+    </article>
+
+    <!-- DURATION REDISTRIBUTION -->
+    <article class="panel">
+      <div class="panel-head">
+        <h2>Duration redistribution by maturity</h2>
+        <p class="panel-note">Share of total par vs share of total duration-dollars</p>
+      </div>
+      <div class="chart-wrap" id="chart-duration-buckets"></div>
+      <p class="chart-caption">The par/duration asymmetry is the central finding. The 0-2Y bucket retires over half of all par but barely a sixth of duration-dollars, while 10-20Y and 20Y+ together account for 23% of par but 63% of duration impact.</p>
+    </article>
+
+    <!-- KEY RESULTS -->
+    <article class="panel">
+      <div class="panel-head"><h2>Key results</h2></div>
+      <div class="panel-body">
+        <p>
+          Cash management operations dominate par volume&mdash;$153 billion of short-dated securities retired
+          almost entirely in the 0-2Y bucket. But <strong>the duration story is inverted</strong>: the 20Y+ bucket
+          accounts for just 12% of par but <strong>35% of duration-dollars</strong>, because each long bond retired
+          removes 15-25 years of interest-rate exposure.
+        </p>
+        <table class="results-table">
+          <thead><tr><th>Bucket</th><th>Par</th><th>% Par</th><th>% Dur-$</th><th>Avg Duration</th></tr></thead>
+          <tbody>
+            <tr><td>0-2Y</td><td>$180B</td><td>56%</td><td>16%</td><td>1.3</td></tr>
+            <tr><td>2-5Y</td><td>$45B</td><td>14%</td><td>12%</td><td>3.4</td></tr>
+            <tr><td>5-10Y</td><td>$22B</td><td>7%</td><td>10%</td><td>6.1</td></tr>
+            <tr><td>10-20Y</td><td>$37B</td><td>11%</td><td class="highlight">28%</td><td>13.8</td></tr>
+            <tr><td>20Y+</td><td>$37B</td><td>12%</td><td class="highlight">35%</td><td>17.5</td></tr>
+          </tbody>
+        </table>
+        <p>
+          Around operations, front-end yields show modest declines (3M: -1.1bp, statistically significant;
+          longer tenors: smaller and not clearly distinguishable from zero). Dealers
+          increase net Treasury positions by ~$7 billion on average, with the largest accumulation in the 7-11Y sector.
+        </p>
+        <p>
+          These are simple averages, not causal estimates. Most buyback operations coincide with auction
+          settlement dates, and overlapping event windows are common (70 of 121 operations have another
+          operation within &plusmn;5 days). Confidence intervals are wide for tenors beyond 6 months.
+        </p>
+      </div>
+    </article>
+
+    <!-- TIPS vs NOMINAL -->
+    <article class="panel">
+      <div class="panel-head">
+        <h2>TIPS vs nominal coupons</h2>
+        <p class="panel-note">Par breakdown by security type</p>
+      </div>
+      <div class="chart-wrap" id="chart-tips-split"></div>
+      <p class="chart-caption">Nominal coupons dominate at 97% of par. TIPS buybacks ($11B) are smaller but analytically distinct&mdash;they use real yield proxies from the H.15 inflation-indexed CMT series and carry higher duration per dollar of par.</p>
+    </article>
+
+    <!-- YIELD CURVE IMPACT -->
+    <article class="panel">
+      <div class="panel-head">
+        <h2>Yield curve impact</h2>
+        <p class="panel-note">Average change day before &rarr; day after &middot; only 3M and 6M are statistically significant</p>
+      </div>
+      <div class="chart-wrap" id="chart-yield-changes"></div>
+      <p class="chart-caption">Only the 3-month and 6-month tenors show statistically significant declines. The long end (20Y, 30Y) trends slightly positive. This pattern is consistent with cash management operations reducing short-dated supply while not mechanically suppressing long yields.</p>
+    </article>
+
+    <!-- DEALER POSITIONS -->
+    <article class="panel">
+      <div class="panel-head">
+        <h2>Dealer position changes</h2>
+        <p class="panel-note">Average change in primary dealer Treasury coupon positions</p>
+      </div>
+      <div class="chart-wrap" id="chart-dealer-changes"></div>
+      <p class="chart-caption">Dealers increase holdings across most of the curve around buyback operations. The 3-6Y bucket is the only sector where positions decline on average, possibly reflecting where Treasury concentrates purchases in that maturity range.</p>
+    </article>
+
+    <!-- INDIVIDUAL OPERATIONS -->
+    <article class="panel">
+      <div class="panel-head">
+        <h2>Individual operations</h2>
+        <p class="panel-note">Size = par accepted &middot; hover for details</p>
+      </div>
+      <div class="chart-wrap" id="chart-operations"></div>
+      <p class="chart-caption">Two clusters emerge: liquidity support operations (blue) sit at high duration / low par, while cash management operations (orange) sit at low duration / high par. The separation reflects the program's dual mandate.</p>
+    </article>
+
+    <!-- TOP CUSIPS -->
+    <article class="panel">
+      <div class="panel-head">
+        <h2>Most purchased securities</h2>
+        <p class="panel-note">Top 10 CUSIPs by total par accepted</p>
+      </div>
+      <div class="panel-body">
+        <table class="results-table" id="top-cusips-table">
+          <thead><tr><th>CUSIP</th><th>Type</th><th>Coupon</th><th>Maturity</th><th>Total Par</th><th>Operations</th><th>Avg Price</th></tr></thead>
+          <tbody id="top-cusips-body"></tbody>
+        </table>
+      </div>
+    </article>
+
+    <!-- TIMELINE -->
+    <article class="panel">
+      <div class="panel-head">
+        <h2>Operation timeline</h2>
+        <p class="panel-note">Duration-dollars per operation &middot; blue = liquidity support &middot; orange = cash management</p>
+      </div>
+      <div class="chart-wrap" id="chart-timeline"></div>
+      <p class="chart-caption">Liquidity support operations (blue) produce the tallest bars because they target long-dated, high-duration securities. Cash management operations (orange) are frequent but carry low duration impact per operation.</p>
+    </article>
+
+    <!-- SOMA CONTEXT -->
+    <article class="panel">
+      <div class="panel-head">
+        <h2>Fed Treasury holdings context</h2>
+        <p class="panel-note">SOMA portfolio composition &middot; monthly from NY Fed</p>
+      </div>
+      <div class="chart-wrap" id="chart-soma"></div>
+      <p class="chart-caption">The Fed's SOMA portfolio peaked above $8T in 2022 during QE and has since declined through quantitative tightening. Treasury buybacks operate against this backdrop&mdash;when the Fed is also reducing duration supply, the net impact on publicly held duration is amplified.</p>
+    </article>
+
+    <!-- METHOD -->
+    <article class="panel">
+      <div class="panel-head"><h2>Method</h2></div>
+      <div class="panel-body">
+        <p>
+          For each buyback operation, DurShift downloads the official results XML from TreasuryDirect,
+          extracting per-CUSIP accepted par, coupon rate, and maturity date. <strong>Yield proxies</strong> are
+          interpolated from the Federal Reserve H.15 constant maturity term structure&mdash;nominal CMT for
+          coupon securities, real CMT for TIPS. Modified duration and DV01 use standard semiannual
+          cashflow discounting. Duration-dollars = market value (par &times; price/100) &times; modified duration.
+        </p>
+        <p>
+          <strong>Event windows</strong> compare dealer positions (NY Fed primary dealer statistics) and
+          Treasury yields (H.15) in the days surrounding each operation. Nearby gross issuance is estimated
+          from Treasury auctions within a &plusmn;14 day window (not matched replacement supply).
+        </p>
+      </div>
+    </article>
+
+    <!-- DATA SOURCES -->
+    <article class="panel">
+      <div class="panel-head">
+        <h2>Data sources</h2>
+        <p class="panel-note">Every input is public and verifiable</p>
+      </div>
+      <div class="source-grid">
+        <div class="source-card">
+          <div class="source-card-name">Buyback results</div>
+          <span class="source-card-tag">TreasuryDirect BBR XML</span>
+          <div class="source-card-desc">Per-CUSIP accepted par, weighted average price, and maturity for each operation</div>
+        </div>
+        <div class="source-card">
+          <div class="source-card-name">Buyback schedule</div>
+          <span class="source-card-tag">Treasury.gov XML</span>
+          <div class="source-card-desc">Tentative quarterly calendar with operation types, security types, and maturity ranges</div>
+        </div>
+        <div class="source-card">
+          <div class="source-card-name">Auction data</div>
+          <span class="source-card-tag">Fiscal Data API</span>
+          <div class="source-card-desc">Treasury auction records (2020&ndash;2026) covering Bills, Notes, Bonds, TIPS, and FRN</div>
+        </div>
+        <div class="source-card">
+          <div class="source-card-name">Treasury yields</div>
+          <span class="source-card-tag">H.15 CMT</span>
+          <div class="source-card-desc">Daily nominal and TIPS real constant maturity rates across 11 tenors</div>
+        </div>
+        <div class="source-card">
+          <div class="source-card-name">Dealer positions</div>
+          <span class="source-card-tag">NY Fed Markets API</span>
+          <div class="source-card-desc">Weekly primary dealer Treasury positions by maturity bucket since 2013</div>
+        </div>
+        <div class="source-card">
+          <div class="source-card-name">SOMA holdings</div>
+          <span class="source-card-tag">NY Fed Markets API</span>
+          <div class="source-card-desc">Weekly Fed Treasury portfolio composition by asset class since 2003</div>
+        </div>
+      </div>
+    </article>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+      <p>
+        Built from official public federal data. This is a descriptive analysis, not a causal model.
+        Duration-dollar estimates use coarse yield proxies and should be treated as approximations.
+      </p>
+      <div class="footer-links">
+        <a href="https://github.com/smkwray/durshift" target="_blank" rel="noopener">GitHub</a>
+        <a href="data/operations.json" download>Download data</a>
+      </div>
+      <p class="footer-byline">By <a href="https://github.com/smkwray" target="_blank" rel="noopener">Shane Wray</a></p>
+    </footer>
+
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

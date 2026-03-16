@@ -1,0 +1,68 @@
+[
+  {
+    "tenor": "1M",
+    "mean_bp": -3.38,
+    "median_bp": -1.0,
+    "n": 109
+  },
+  {
+    "tenor": "3M",
+    "mean_bp": -2.04,
+    "median_bp": 0.0,
+    "n": 109
+  },
+  {
+    "tenor": "6M",
+    "mean_bp": -2.0,
+    "median_bp": -1.0,
+    "n": 109
+  },
+  {
+    "tenor": "1Y",
+    "mean_bp": -1.39,
+    "median_bp": -1.0,
+    "n": 109
+  },
+  {
+    "tenor": "2Y",
+    "mean_bp": -0.08,
+    "median_bp": -1.0,
+    "n": 109
+  },
+  {
+    "tenor": "3Y",
+    "mean_bp": 0.5,
+    "median_bp": 0.0,
+    "n": 109
+  },
+  {
+    "tenor": "5Y",
+    "mean_bp": 1.46,
+    "median_bp": 1.0,
+    "n": 109
+  },
+  {
+    "tenor": "7Y",
+    "mean_bp": 1.72,
+    "median_bp": 0.0,
+    "n": 109
+  },
+  {
+    "tenor": "10Y",
+    "mean_bp": 1.92,
+    "median_bp": 0.0,
+    "n": 109
+  },
+  {
+    "tenor": "20Y",
+    "mean_bp": 2.38,
+    "median_bp": 2.0,
+    "n": 109
+  },
+  {
+    "tenor": "30Y",
+    "mean_bp": 2.27,
+    "median_bp": 3.0,
+    "n": 109
+  }
+]

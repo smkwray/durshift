@@ -1,0 +1,44 @@
+[
+  {
+    "bucket": "<2Y",
+    "mean_B": 2.99,
+    "median_B": 1.32,
+    "n": 114
+  },
+  {
+    "bucket": "2-3Y",
+    "mean_B": 0.34,
+    "median_B": 0.72,
+    "n": 114
+  },
+  {
+    "bucket": "3-6Y",
+    "mean_B": 0.8,
+    "median_B": 0.6,
+    "n": 114
+  },
+  {
+    "bucket": "6-7Y",
+    "mean_B": 0.94,
+    "median_B": 0.45,
+    "n": 114
+  },
+  {
+    "bucket": "7-11Y",
+    "mean_B": 1.85,
+    "median_B": 1.74,
+    "n": 114
+  },
+  {
+    "bucket": "11-21Y",
+    "mean_B": 1.91,
+    "median_B": 2.82,
+    "n": 114
+  },
+  {
+    "bucket": ">21Y",
+    "mean_B": 1.73,
+    "median_B": 2.05,
+    "n": 114
+  }
+]

@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+dist/
+build/
+*.egg-info/
+
+# Environment
+.env
+
+# Internal orchestration
+do/
+.playwright-cli/
+prompts/
+AGENTS.md
+implement.md
+plans.md
+documentation.md
+CONTRIBUTING.md
+docs/
+
+# Node / Site
+node_modules/
+site/dist/
+site/node_modules/
+
+# Editors
+.vscode/
+.idea/
+.DS_Store
+
+# Data artifacts
+data/raw/*
+data/interim/*
+data/processed/*
+!data/raw/.gitkeep
+!data/interim/.gitkeep
+!data/processed/.gitkeep
+
+# Outputs
+outputs/figures/*
+outputs/tables/*
+outputs/reports/*
+!outputs/figures/.gitkeep
+!outputs/tables/.gitkeep
+!outputs/reports/.gitkeep
+uv.lock

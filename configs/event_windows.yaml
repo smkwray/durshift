@@ -1,0 +1,10 @@
+windows:
+  announcement:
+    pre_days: 5
+    post_days: 5
+  operation:
+    pre_days: 5
+    post_days: 5
+  refunding:
+    pre_days: 10
+    post_days: 10

@@ -1,0 +1,6 @@
+announcement_date,operation_date,security_type,maturity_years,coupon_rate,yield_proxy,accepted_amount,offered_amount,issue_date,stated_purpose,buyback_bucket,notes,replacement_maturity_years
+2025-02-03,2025-02-05,NominalCoupon,14.8,0.0425,0.0440,1800000000,2000000000,2014-05-15,liquidity_support,10Y-20Y,Illustrative off-the-run support example,10.0
+2025-02-10,2025-02-12,NominalCoupon,24.2,0.0463,0.0470,2000000000,2000000000,2006-11-15,liquidity_support,20Y-30Y,Illustrative long-end balance-sheet relief example,20.0
+2025-06-09,2025-06-11,Bill,0.4,0.0000,0.0410,12000000000,15000000000,2025-01-15,cash_management,1M-2Y,Illustrative tax-date cash management example,0.25
+2025-08-11,2025-08-13,TIPS,8.3,0.0125,0.0190,350000000,500000000,2018-01-15,liquidity_support,1Y-10Y TIPS,Illustrative TIPS support example,10.0
+2026-02-02,2026-02-04,NominalCoupon,1.7,0.0390,0.0400,18000000000,20000000000,2024-05-15,cash_management,1M-2Y,Illustrative bill-smoothing example,0.5

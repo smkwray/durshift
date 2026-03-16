@@ -1,0 +1,92 @@
+[
+  {
+    "cusip": "912810SY5",
+    "total_par_M": 10120,
+    "n_operations": 9,
+    "avg_price": 73.25,
+    "maturity_date": "2041-05-15",
+    "coupon_pct": 2.25,
+    "security_type": "Nominal Coupons"
+  },
+  {
+    "cusip": "91282CCW9",
+    "total_par_M": 8322,
+    "n_operations": 16,
+    "avg_price": 96.27,
+    "maturity_date": "2026-08-31",
+    "coupon_pct": 0.75,
+    "security_type": "Nominal Coupons"
+  },
+  {
+    "cusip": "91282CCF6",
+    "total_par_M": 7609,
+    "n_operations": 10,
+    "avg_price": 96.03,
+    "maturity_date": "2026-05-31",
+    "coupon_pct": 0.75,
+    "security_type": "Nominal Coupons"
+  },
+  {
+    "cusip": "91282CKH3",
+    "total_par_M": 7186,
+    "n_operations": 11,
+    "avg_price": 100.35,
+    "maturity_date": "2026-03-31",
+    "coupon_pct": 4.5,
+    "security_type": "Nominal Coupons"
+  },
+  {
+    "cusip": "912810RV2",
+    "total_par_M": 6899,
+    "n_operations": 10,
+    "avg_price": 76.18,
+    "maturity_date": "2047-02-15",
+    "coupon_pct": 3.0,
+    "security_type": "Nominal Coupons"
+  },
+  {
+    "cusip": "91282CKS9",
+    "total_par_M": 6860,
+    "n_operations": 8,
+    "avg_price": 100.71,
+    "maturity_date": "2026-05-31",
+    "coupon_pct": 4.875,
+    "security_type": "Nominal Coupons"
+  },
+  {
+    "cusip": "91282CBQ3",
+    "total_par_M": 6521,
+    "n_operations": 13,
+    "avg_price": 95.99,
+    "maturity_date": "2026-02-28",
+    "coupon_pct": 0.5,
+    "security_type": "Nominal Coupons"
+  },
+  {
+    "cusip": "91282CJL6",
+    "total_par_M": 6392,
+    "n_operations": 6,
+    "avg_price": 100.69,
+    "maturity_date": "2025-11-30",
+    "coupon_pct": 4.875,
+    "security_type": "Nominal Coupons"
+  },
+  {
+    "cusip": "912810SW9",
+    "total_par_M": 6209,
+    "n_operations": 8,
+    "avg_price": 69.95,
+    "maturity_date": "2041-02-15",
+    "coupon_pct": 1.875,
+    "security_type": "Nominal Coupons"
+  },
+  {
+    "cusip": "91282CHN4",
+    "total_par_M": 6164,
+    "n_operations": 7,
+    "avg_price": 100.36,
+    "maturity_date": "2025-07-31",
+    "coupon_pct": 4.75,
+    "security_type": "Nominal Coupons"
+  }
+]

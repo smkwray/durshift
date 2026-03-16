@@ -1,0 +1,59 @@
+sources:
+  treasury_buybacks:
+    owner: U.S. Treasury / TreasuryDirect
+    official_pages:
+      - https://www.treasurydirect.gov/auctions/results/
+      - https://home.treasury.gov/news/press-releases
+    notes:
+      - Tentative buyback schedules are announced in quarterly refunding statements.
+      - Buyback announcements and results are linked from TreasuryDirect's auction results pages.
+      - Implement parser assumptions carefully because HTML structure may drift.
+
+  treasury_auctions:
+    owner: U.S. Treasury / Fiscal Data / TreasuryDirect
+    official_pages:
+      - https://fiscaldata.treasury.gov/datasets/treasury-securities-auctions-data/
+      - https://www.treasurydirect.gov/auctions/announcements-data-results/
+    notes:
+      - Use Fiscal Data where possible for machine-readable auction series.
+      - Use TreasuryDirect for cross-checking current pages and press releases.
+
+  quarterly_refunding_and_tbac:
+    owner: U.S. Treasury
+    official_pages:
+      - https://home.treasury.gov/news/press-releases
+    notes:
+      - Quarterly refunding statements provide institutional framing.
+      - TBAC materials are often posted as PDFs linked from Treasury pages.
+
+  primary_dealer_statistics:
+    owner: Federal Reserve Bank of New York
+    official_pages:
+      - https://www.newyorkfed.org/markets/counterparties/primary-dealers-statistics
+    notes:
+      - Weekly aggregates include positions, transactions, financing, and fails.
+      - Plan for one-week publication lag in merges.
+
+  h15_rates:
+    owner: Federal Reserve Board
+    official_pages:
+      - https://www.federalreserve.gov/releases/h15/
+      - https://www.federalreserve.gov/datadownload/Choose.aspx?rel=H15
+    notes:
+      - Daily rates can serve as context and yield proxies.
+
+  debt_outstanding:
+    owner: U.S. Treasury Fiscal Data
+    official_pages:
+      - https://fiscaldata.treasury.gov/datasets/monthly-statement-public-debt/
+      - https://fiscaldata.treasury.gov/datasets/debt-to-the-penny/
+    notes:
+      - Use MSPD-style tables for maturity composition.
+      - Use debt-to-the-penny only where daily public debt context is useful.
+
+  soma_holdings:
+    owner: Federal Reserve Bank of New York
+    official_pages:
+      - https://www.newyorkfed.org/markets/soma-holdings
+    notes:
+      - Optional control for changing public duration supply.

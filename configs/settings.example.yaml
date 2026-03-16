@@ -1,0 +1,17 @@
+paths:
+  data_root: data
+  raw_dir: data/raw
+  interim_dir: data/interim
+  processed_dir: data/processed
+  outputs_dir: outputs
+
+assumptions:
+  default_coupon_frequency: 2
+  default_yield_proxy: 0.04
+  default_event_pre_days: 5
+  default_event_post_days: 5
+
+files:
+  maturity_buckets: configs/maturity_buckets.yaml
+  event_windows: configs/event_windows.yaml
+  data_sources: configs/data_sources.yaml

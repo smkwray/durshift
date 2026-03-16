@@ -1,0 +1,16 @@
+buckets:
+  - name: 0-2Y
+    min_years: 0.0
+    max_years: 2.0
+  - name: 2-5Y
+    min_years: 2.0
+    max_years: 5.0
+  - name: 5-10Y
+    min_years: 5.0
+    max_years: 10.0
+  - name: 10-20Y
+    min_years: 10.0
+    max_years: 20.0
+  - name: 20Y+
+    min_years: 20.0
+    max_years: 100.0
