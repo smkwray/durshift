@@ -10,6 +10,7 @@ import json
 from pathlib import Path
 
 import pandas as pd
+from scipy import stats as sp_stats
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"
@@ -17,9 +18,17 @@ OUT = ROOT / "site" / "public" / "data"
 OUT.mkdir(parents=True, exist_ok=True)
 
 
-def main() -> None:
-    ops = pd.read_csv(DATA / "processed" / "real_operation_panel.csv")
-    ops["operation_date"] = pd.to_datetime(ops["operation_date"])
+def generate_all(
+    ops: pd.DataFrame,
+    h15: pd.DataFrame,
+    dealers: pd.DataFrame,
+    out_dir: Path,
+    tables_dir: Path | None = ROOT / "outputs" / "tables",
+) -> None:
+    """Core generation logic.  Accepts pre-loaded DataFrames so tests can call
+    this without touching the filesystem for input data."""
+
+    out_dir.mkdir(parents=True, exist_ok=True)
 
     # 1. operations.json
     op_summary = (
@@ -37,7 +46,7 @@ def main() -> None:
         .reset_index()
     )
     op_summary["operation_date"] = op_summary["operation_date"].dt.strftime("%Y-%m-%d")
-    op_summary.to_json(OUT / "operations.json", orient="records", indent=2, date_format="iso")
+    op_summary.to_json(out_dir / "operations.json", orient="records", indent=2, date_format="iso")
     print(f"operations.json: {len(op_summary)} records")
 
     # 2. duration_buckets.json
@@ -48,13 +57,10 @@ def main() -> None:
     bucket_order = ["0-2Y", "2-5Y", "5-10Y", "10-20Y", "20Y+"]
     bucket["_sort"] = bucket["maturity_bucket"].map({b: i for i, b in enumerate(bucket_order)})
     bucket = bucket.sort_values("_sort").drop(columns=["_sort"])
-    bucket.to_json(OUT / "duration_buckets.json", orient="records", indent=2, date_format="iso")
+    bucket.to_json(out_dir / "duration_buckets.json", orient="records", indent=2, date_format="iso")
     print(f"duration_buckets.json: {len(bucket)} records")
 
     # 3. event_study + yield/dealer changes
-    h15 = pd.read_csv(DATA / "raw" / "h15_rates.csv", index_col=0, parse_dates=True)
-    dealers = pd.read_csv(DATA / "raw" / "dealer_positions.csv", index_col=0, parse_dates=True)
-
     from durshift.analytics.event_windows import build_event_study_panel
 
     events = build_event_study_panel(ops, dealers, h15)
@@ -62,7 +68,7 @@ def main() -> None:
     for col in events_out.columns:
         if pd.api.types.is_datetime64_any_dtype(events_out[col]):
             events_out[col] = events_out[col].dt.strftime("%Y-%m-%d")
-    events_out.to_json(OUT / "event_study.json", orient="records", indent=2, date_format="iso")
+    events_out.to_json(out_dir / "event_study.json", orient="records", indent=2, date_format="iso")
     events_out.to_csv(DATA / "processed" / "event_study_panel.csv", index=False)
     print(f"event_study.json: {len(events_out)} records")
 
@@ -78,7 +84,9 @@ def main() -> None:
         .reset_index()
     )
     ops_monthly["operation_date"] = ops_monthly["operation_date"].dt.strftime("%Y-%m")
-    ops_monthly.to_json(OUT / "monthly_volume.json", orient="records", indent=2, date_format="iso")
+    ops_monthly.to_json(
+        out_dir / "monthly_volume.json", orient="records", indent=2, date_format="iso"
+    )
     print(f"monthly_volume.json: {len(ops_monthly)} records")
 
     # 5. yield_changes.json
@@ -100,15 +108,24 @@ def main() -> None:
     for col, label in zip(yield_cols, tenor_labels, strict=True):
         if col in events.columns:
             vals = events[col].dropna().astype(float) * 100
+            n = len(vals)
+            mean = vals.mean()
+            std_err = vals.std() / n**0.5 if n > 1 else 0.0
+            _, p_value = sp_stats.ttest_1samp(vals, 0) if n > 1 else (0, 1.0)
             yield_data.append(
                 {
                     "tenor": label,
-                    "mean_bp": round(vals.mean(), 2),
-                    "median_bp": round(vals.median(), 2),
-                    "n": len(vals),
+                    "mean_bp": round(float(mean), 2),
+                    "median_bp": round(float(vals.median()), 2),
+                    "std_err": round(float(std_err), 3),
+                    "ci_lower": round(float(mean - 1.96 * std_err), 2),
+                    "ci_upper": round(float(mean + 1.96 * std_err), 2),
+                    "p_value": round(float(p_value), 4),
+                    "significant": bool(p_value < 0.05),
+                    "n": n,
                 }
             )
-    _write_json(OUT / "yield_changes.json", yield_data)
+    _write_json(out_dir / "yield_changes.json", yield_data)
     print(f"yield_changes.json: {len(yield_data)} records")
 
     # 6. dealer_changes.json
@@ -125,18 +142,27 @@ def main() -> None:
     for col, label in dealer_map.items():
         if col in events.columns:
             vals = events[col].dropna().astype(float) / 1e3
+            n = len(vals)
+            mean = vals.mean()
+            std_err = vals.std() / n**0.5 if n > 1 else 0.0
+            _, p_value = sp_stats.ttest_1samp(vals, 0) if n > 1 else (0, 1.0)
             dealer_data.append(
                 {
                     "bucket": label,
-                    "mean_B": round(vals.mean(), 2),
-                    "median_B": round(vals.median(), 2),
-                    "n": len(vals),
+                    "mean_B": round(float(mean), 2),
+                    "median_B": round(float(vals.median()), 2),
+                    "std_err": round(float(std_err), 3),
+                    "ci_lower": round(float(mean - 1.96 * std_err), 2),
+                    "ci_upper": round(float(mean + 1.96 * std_err), 2),
+                    "p_value": round(float(p_value), 4),
+                    "significant": bool(p_value < 0.05),
+                    "n": n,
                 }
             )
-    _write_json(OUT / "dealer_changes.json", dealer_data)
+    _write_json(out_dir / "dealer_changes.json", dealer_data)
     print(f"dealer_changes.json: {len(dealer_data)} records")
 
-    # 7. soma_context.json (new)
+    # 7. soma_context.json
     soma_path = DATA / "raw" / "soma_holdings.csv"
     if soma_path.exists():
         soma = pd.read_csv(soma_path, index_col=0, parse_dates=True)
@@ -145,11 +171,11 @@ def main() -> None:
         soma_site = []
         for date, row in soma_monthly.iterrows():
             entry = {"date": date.strftime("%Y-%m")}
-            for col in ["total", "bills", "notes_bonds", "tips", "frn", "mbs"]:
-                if col in row.index:
-                    entry[col] = round(row[col] / 1e9, 1) if pd.notna(row[col]) else None
+            for c in ["total", "bills", "notes_bonds", "tips", "frn", "mbs"]:
+                if c in row.index:
+                    entry[c] = round(row[c] / 1e9, 1) if pd.notna(row[c]) else None
             soma_site.append(entry)
-        _write_json(OUT / "soma.json", soma_site)
+        _write_json(out_dir / "soma.json", soma_site)
         print(f"soma.json: {len(soma_site)} records")
 
     # 8. summary.json
@@ -162,17 +188,27 @@ def main() -> None:
         "date_range_start": op_summary["operation_date"].min(),
         "date_range_end": op_summary["operation_date"].max(),
     }
-    _write_json(OUT / "summary.json", summary)
+    _write_json(out_dir / "summary.json", summary)
     print(f"summary.json: dur_dollars={summary['total_duration_dollars_B']}B")
 
     # 9. Regenerate output tables
-    bucket.to_csv(ROOT / "outputs" / "tables" / "duration_redistribution_summary.csv", index=False)
+    if tables_dir is not None:
+        tables_dir.mkdir(parents=True, exist_ok=True)
+        bucket.to_csv(tables_dir / "duration_redistribution_summary.csv", index=False)
 
-    from durshift.reporting.summary_tables import build_duration_summary
+        from durshift.reporting.summary_tables import build_duration_summary
 
-    dur_summary = build_duration_summary(ops)
-    dur_summary.to_csv(ROOT / "outputs" / "tables" / "real_duration_summary.csv", index=False)
-    print("Output tables regenerated")
+        dur_summary = build_duration_summary(ops)
+        dur_summary.to_csv(tables_dir / "real_duration_summary.csv", index=False)
+        print("Output tables regenerated")
+
+
+def main() -> None:
+    ops = pd.read_csv(DATA / "processed" / "real_operation_panel.csv")
+    ops["operation_date"] = pd.to_datetime(ops["operation_date"])
+    h15 = pd.read_csv(DATA / "raw" / "h15_rates.csv", index_col=0, parse_dates=True)
+    dealers = pd.read_csv(DATA / "raw" / "dealer_positions.csv", index_col=0, parse_dates=True)
+    generate_all(ops, h15, dealers, OUT)
 
 
 def _write_json(path: Path, data) -> None:

@@ -80,7 +80,7 @@ def normalize_operation_panel(frame: pd.DataFrame) -> pd.DataFrame:
         ),
         axis=1,
     )
-    working["duration_dollars"] = working["accepted_amount"] * working["modified_duration"]
+    working["par_duration"] = working["accepted_amount"] * working["modified_duration"]
 
     validate_required_columns(working, OPERATION_PANEL_COLUMNS, "operation panel")
 

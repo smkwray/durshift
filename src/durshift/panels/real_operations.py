@@ -113,10 +113,12 @@ def build_real_operation_panel(
 
     # Yield proxy: TIPS get real yields, nominals get nominal CMT
     if h15 is not None or tips_rates is not None:
-        panel["yield_proxy"] = panel.apply(
+        results = panel.apply(
             lambda row: _resolve_yield(h15, tips_rates, row),
             axis=1,
         )
+        panel["yield_proxy"] = results.apply(lambda x: x[0])
+        panel["yield_source"] = results.apply(lambda x: x[1])
     else:
         panel["yield_proxy"] = panel["coupon_rate"].clip(lower=0.005)
         panel["yield_source"] = "coupon"
@@ -192,7 +194,7 @@ def _resolve_yield(
     h15: pd.DataFrame | None,
     tips_rates: pd.DataFrame | None,
     row: pd.Series,
-) -> float:
+) -> tuple[float, str]:
     """Pick the right yield curve (nominal or TIPS real) and interpolate."""
     from durshift.data.h15_rates import interpolate_tips_yield, interpolate_yield_for_maturity
 
@@ -202,7 +204,7 @@ def _resolve_yield(
     coupon_fallback = max(float(row.get("coupon_rate", 0.005)), 0.005)
 
     if pd.isna(mat_years) or pd.isna(op_date):
-        return coupon_fallback
+        return (coupon_fallback, "coupon")
 
     ts = pd.Timestamp(op_date)
 
@@ -211,15 +213,15 @@ def _resolve_yield(
         rate = interpolate_tips_yield(tips_rates, ts, float(mat_years))
         if rate is not None:
             # Real yields can be negative; floor at -0.05 to avoid degenerate math
-            return max(rate, -0.05)
+            return (max(rate, -0.05), "tips_real")
 
     # Nominal securities (or TIPS fallback): use nominal CMT
     if h15 is not None:
         rate = interpolate_yield_for_maturity(h15, ts, float(mat_years))
         if rate is not None and rate > 0:
-            return rate
+            return (rate, "h15_nominal")
 
-    return coupon_fallback
+    return (coupon_fallback, "coupon")
 
 
 def _safe_duration(coupon_rate, yield_rate, maturity_years) -> float:

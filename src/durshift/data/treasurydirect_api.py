@@ -97,16 +97,31 @@ def fetch_securities(
         "pagesize": str(page_size),
         "startDate": start_date,
     }
-    logger.info("Fetching %s auctions from TreasuryDirect (since %s)...", security_type, start_date)
-    response = requests.get(BASE_URL, params=params, timeout=timeout)
-    response.raise_for_status()
-    records = response.json()
+    all_records: list[dict] = []
+    page_num = 1
+    while True:
+        params["pagenum"] = str(page_num)
+        logger.info(
+            "Fetching %s auctions page %d from TreasuryDirect (since %s)...",
+            security_type,
+            page_num,
+            start_date,
+        )
+        response = requests.get(BASE_URL, params=params, timeout=timeout)
+        response.raise_for_status()
+        records = response.json()
+        if not records:
+            break
+        all_records.extend(records)
+        if len(records) < page_size:
+            break
+        page_num += 1
 
-    if not records:
+    if not all_records:
         logger.info("No %s records returned.", security_type)
         return pd.DataFrame()
 
-    frame = pd.DataFrame(records)
+    frame = pd.DataFrame(all_records)
 
     # Keep only the fields we care about (some may be absent)
     keep = [c for c in KEEP_FIELDS if c in frame.columns]

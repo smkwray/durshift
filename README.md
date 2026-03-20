@@ -26,13 +26,13 @@ The par/duration asymmetry is the central finding. Cash management operations re
 
 ### Yield curve impact
 
-Around buyback operations, front-end yields show modest declines (3M: -1.1bp, 6M: -0.8bp; both statistically significant at 95%). Longer tenors show smaller changes not clearly distinguishable from zero. The long end (20Y, 30Y) trends slightly positive.
+Around buyback operations, front-end yields show modest declines (3M and 6M; see dashboard for confidence intervals and p-values). Longer tenors show smaller changes not clearly distinguishable from zero. The long end (20Y, 30Y) trends slightly positive.
 
 This pattern is consistent with cash management operations reducing short-dated supply while not mechanically suppressing long yields. However, these are simple averages, not causal estimates — most operations coincide with auction settlement dates, and 70 of 121 operations have another operation within ±5 days.
 
 ### Dealer positioning
 
-Primary dealers increase net Treasury coupon holdings by ~$7B on average around buyback operations, with the largest accumulation in the 7-11Y sector (+$0.8B). The 3-6Y bucket is the only sector where positions decline on average, possibly reflecting where Treasury concentrates purchases in that maturity range.
+Primary dealers increase net Treasury coupon holdings by ~$7B on average around buyback operations, with the largest accumulation in the 7-11Y sector. Dealers increase positions across all maturity buckets.
 
 ### TIPS vs nominal
 

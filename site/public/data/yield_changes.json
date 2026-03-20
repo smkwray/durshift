@@ -3,66 +3,121 @@
     "tenor": "1M",
     "mean_bp": -3.38,
     "median_bp": -1.0,
+    "std_err": 0.827,
+    "ci_lower": -5.0,
+    "ci_upper": -1.75,
+    "p_value": 0.0001,
+    "significant": true,
     "n": 109
   },
   {
     "tenor": "3M",
     "mean_bp": -2.04,
     "median_bp": 0.0,
+    "std_err": 0.695,
+    "ci_lower": -3.4,
+    "ci_upper": -0.67,
+    "p_value": 0.0041,
+    "significant": true,
     "n": 109
   },
   {
     "tenor": "6M",
     "mean_bp": -2.0,
     "median_bp": -1.0,
+    "std_err": 0.677,
+    "ci_lower": -3.33,
+    "ci_upper": -0.67,
+    "p_value": 0.0038,
+    "significant": true,
     "n": 109
   },
   {
     "tenor": "1Y",
     "mean_bp": -1.39,
     "median_bp": -1.0,
+    "std_err": 0.898,
+    "ci_lower": -3.15,
+    "ci_upper": 0.38,
+    "p_value": 0.1259,
+    "significant": false,
     "n": 109
   },
   {
     "tenor": "2Y",
     "mean_bp": -0.08,
     "median_bp": -1.0,
+    "std_err": 1.169,
+    "ci_lower": -2.37,
+    "ci_upper": 2.21,
+    "p_value": 0.9438,
+    "significant": false,
     "n": 109
   },
   {
     "tenor": "3Y",
     "mean_bp": 0.5,
     "median_bp": 0.0,
+    "std_err": 1.213,
+    "ci_lower": -1.87,
+    "ci_upper": 2.88,
+    "p_value": 0.6782,
+    "significant": false,
     "n": 109
   },
   {
     "tenor": "5Y",
     "mean_bp": 1.46,
     "median_bp": 1.0,
+    "std_err": 1.245,
+    "ci_lower": -0.98,
+    "ci_upper": 3.9,
+    "p_value": 0.2439,
+    "significant": false,
     "n": 109
   },
   {
     "tenor": "7Y",
     "mean_bp": 1.72,
     "median_bp": 0.0,
+    "std_err": 1.223,
+    "ci_lower": -0.67,
+    "ci_upper": 4.12,
+    "p_value": 0.1614,
+    "significant": false,
     "n": 109
   },
   {
     "tenor": "10Y",
     "mean_bp": 1.92,
     "median_bp": 0.0,
+    "std_err": 1.158,
+    "ci_lower": -0.35,
+    "ci_upper": 4.19,
+    "p_value": 0.1007,
+    "significant": false,
     "n": 109
   },
   {
     "tenor": "20Y",
     "mean_bp": 2.38,
     "median_bp": 2.0,
+    "std_err": 1.11,
+    "ci_lower": 0.2,
+    "ci_upper": 4.55,
+    "p_value": 0.0346,
+    "significant": true,
     "n": 109
   },
   {
     "tenor": "30Y",
     "mean_bp": 2.27,
     "median_bp": 3.0,
+    "std_err": 1.089,
+    "ci_lower": 0.13,
+    "ci_upper": 4.4,
+    "p_value": 0.0398,
+    "significant": true,
     "n": 109
   }
 ]

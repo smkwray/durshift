@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-python -m venv .venv
-source .venv/bin/activate
+VENV_DIR="${HOME}/venvs/DurShift"
+mkdir -p "$(dirname "$VENV_DIR")"
+python -m venv "$VENV_DIR"
+source "$VENV_DIR/bin/activate"
+export PYTHONDONTWRITEBYTECODE=1
 python -m pip install --upgrade pip
-pip install -e ".[dev]"
+pip install --no-compile -e ".[dev]"
 
 echo "Environment ready."
 echo "Next steps:"

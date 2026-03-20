@@ -44,7 +44,7 @@ TENOR_MAP = {
 
 def fetch_h15_rates(
     start: str = "01/01/2020",
-    end: str = "12/31/2026",
+    end: str = "",
     timeout: int = 60,
 ) -> pd.DataFrame:
     """Download daily H.15 Treasury constant maturity rates.
@@ -61,6 +61,8 @@ def fetch_h15_rates(
     pd.DataFrame
         Daily observations with date index and tenor columns (cmt_1m .. cmt_30y).
     """
+    if not end:
+        end = pd.Timestamp.today().strftime("%m/%d/%Y")
     url = H15_URL.format(start=start, end=end)
     logger.info("Downloading H.15 rates from %s to %s ...", start, end)
     response = requests.get(url, timeout=timeout)
@@ -107,9 +109,11 @@ def fetch_h15_rates(
 def fetch_and_save_h15(
     destination: str | Path,
     start: str = "01/01/2020",
-    end: str = "12/31/2026",
+    end: str = "",
 ) -> Path:
     """Download H.15 rates and save as CSV."""
+    if not end:
+        end = pd.Timestamp.today().strftime("%m/%d/%Y")
     frame = fetch_h15_rates(start=start, end=end)
     output_path = ensure_parent_dir(destination)
     frame.to_csv(output_path)

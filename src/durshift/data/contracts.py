@@ -37,7 +37,7 @@ OPERATION_PANEL_COLUMNS = [
     "replacement_maturity_bucket",
     "modified_duration",
     "dv01",
-    "duration_dollars",
+    "par_duration",
     "notes",
 ]
 

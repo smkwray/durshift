@@ -3,42 +3,77 @@
     "bucket": "<2Y",
     "mean_B": 2.99,
     "median_B": 1.32,
+    "std_err": 1.06,
+    "ci_lower": 0.92,
+    "ci_upper": 5.07,
+    "p_value": 0.0056,
+    "significant": true,
     "n": 114
   },
   {
     "bucket": "2-3Y",
     "mean_B": 0.34,
     "median_B": 0.72,
+    "std_err": 0.758,
+    "ci_lower": -1.14,
+    "ci_upper": 1.83,
+    "p_value": 0.653,
+    "significant": false,
     "n": 114
   },
   {
     "bucket": "3-6Y",
     "mean_B": 0.8,
     "median_B": 0.6,
+    "std_err": 0.862,
+    "ci_lower": -0.88,
+    "ci_upper": 2.49,
+    "p_value": 0.3523,
+    "significant": false,
     "n": 114
   },
   {
     "bucket": "6-7Y",
     "mean_B": 0.94,
     "median_B": 0.45,
+    "std_err": 0.508,
+    "ci_lower": -0.06,
+    "ci_upper": 1.93,
+    "p_value": 0.0672,
+    "significant": false,
     "n": 114
   },
   {
     "bucket": "7-11Y",
     "mean_B": 1.85,
     "median_B": 1.74,
+    "std_err": 0.609,
+    "ci_lower": 0.65,
+    "ci_upper": 3.04,
+    "p_value": 0.003,
+    "significant": true,
     "n": 114
   },
   {
     "bucket": "11-21Y",
     "mean_B": 1.91,
     "median_B": 2.82,
+    "std_err": 0.419,
+    "ci_lower": 1.09,
+    "ci_upper": 2.73,
+    "p_value": 0.0,
+    "significant": true,
     "n": 114
   },
   {
     "bucket": ">21Y",
     "mean_B": 1.73,
     "median_B": 2.05,
+    "std_err": 0.533,
+    "ci_lower": 0.68,
+    "ci_upper": 2.77,
+    "p_value": 0.0016,
+    "significant": true,
     "n": 114
   }
 ]

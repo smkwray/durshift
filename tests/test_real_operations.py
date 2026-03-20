@@ -43,7 +43,8 @@ def test_resolve_yield_uses_h15():
     )
     result = _resolve_yield(h15, None, row)
     # Should come from H.15 interpolation (4.25 / 100 = 0.0425)
-    assert abs(result - 0.0425) < 1e-6
+    assert abs(result[0] - 0.0425) < 1e-6
+    assert result[1] == "h15_nominal"
 
 
 def test_resolve_yield_fallback_to_coupon():
@@ -59,7 +60,8 @@ def test_resolve_yield_fallback_to_coupon():
     )
     result = _resolve_yield(h15, None, row)
     # interpolate_yield_for_maturity returns None -> falls back to coupon
-    assert abs(result - 0.03) < 1e-9
+    assert abs(result[0] - 0.03) < 1e-9
+    assert result[1] == "coupon"
 
 
 def test_resolve_yield_nan_maturity():
@@ -74,7 +76,8 @@ def test_resolve_yield_nan_maturity():
     )
     result = _resolve_yield(h15, None, row)
     # NaN maturity -> falls back to coupon (clipped to min 0.005)
-    assert abs(result - 0.04) < 1e-9
+    assert abs(result[0] - 0.04) < 1e-9
+    assert result[1] == "coupon"
 
 
 def test_resolve_yield_zero_coupon_floor():
@@ -89,7 +92,8 @@ def test_resolve_yield_zero_coupon_floor():
     )
     result = _resolve_yield(h15, None, row)
     # max(0.0, 0.005) = 0.005
-    assert abs(result - 0.005) < 1e-9
+    assert abs(result[0] - 0.005) < 1e-9
+    assert result[1] == "coupon"
 
 
 # ── _safe_duration ──────────────────────────────────────────────────

@@ -18,6 +18,7 @@ build/
 # Internal orchestration
 do/
 .playwright-cli/
+.playwright-mcp/
 prompts/
 AGENTS.md
 implement.md
