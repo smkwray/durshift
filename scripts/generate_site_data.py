@@ -18,6 +18,17 @@ OUT = ROOT / "site" / "public" / "data"
 OUT.mkdir(parents=True, exist_ok=True)
 
 
+def _count_overlapping(dates: pd.Series, window_days: int = 5) -> int:
+    """Count dates that have another date within ±window_days."""
+    unique = dates.drop_duplicates().sort_values().reset_index(drop=True)
+    count = 0
+    for i, d in enumerate(unique):
+        others = unique.drop(i)
+        if (others - d).abs().dt.days.min() <= window_days:
+            count += 1
+    return count
+
+
 def generate_all(
     ops: pd.DataFrame,
     h15: pd.DataFrame,
@@ -185,6 +196,23 @@ def generate_all(
         "total_par_B": round(ops["par_amount_accepted"].sum() / 1e9, 1),
         "total_duration_dollars_B": round(ops["duration_dollars"].sum() / 1e9, 1),
         "unique_cusips": int(ops["cusip"].nunique()),
+        "nominal_par_B": round(
+            ops.loc[
+                ~ops["security_type"].str.contains("TIPS", case=False, na=False),
+                "par_amount_accepted",
+            ].sum()
+            / 1e9,
+            1,
+        ),
+        "tips_par_B": round(
+            ops.loc[
+                ops["security_type"].str.contains("TIPS", case=False, na=False),
+                "par_amount_accepted",
+            ].sum()
+            / 1e9,
+            1,
+        ),
+        "n_overlapping": _count_overlapping(ops["operation_date"], window_days=5),
         "date_range_start": op_summary["operation_date"].min(),
         "date_range_end": op_summary["operation_date"].max(),
     }
@@ -201,6 +229,33 @@ def generate_all(
         dur_summary = build_duration_summary(ops)
         dur_summary.to_csv(tables_dir / "real_duration_summary.csv", index=False)
         print("Output tables regenerated")
+
+    # 10. top_cusips.json
+    top = (
+        ops.groupby("cusip")
+        .agg(
+            total_par_M=("par_amount_accepted", lambda x: round(x.sum() / 1e6)),
+            n_operations=("operation_date", "nunique"),
+            avg_price=(
+                "weighted_avg_price",
+                lambda x: round(x.mean(), 2) if "weighted_avg_price" in ops.columns else 100.0,
+            ),
+            security_type=("security_type", "first"),
+            coupon_pct=("coupon_rate", lambda x: round(x.iloc[0] * 100, 3)),
+            maturity_date=("maturity_date", "first"),
+            total_duration_M=("duration_dollars", lambda x: round(x.sum() / 1e6)),
+        )
+        .sort_values("total_par_M", ascending=False)
+        .head(10)
+        .reset_index()
+    )
+    # Format maturity_date as string
+    if "maturity_date" in top.columns:
+        top["maturity_date"] = pd.to_datetime(top["maturity_date"], errors="coerce").dt.strftime(
+            "%Y-%m-%d"
+        )
+    top.to_json(out_dir / "top_cusips.json", orient="records", indent=2)
+    print(f"top_cusips.json: {len(top)} records")
 
 
 def main() -> None:

@@ -213,8 +213,8 @@ function renderDurationBuckets(data) {
 
 function renderTipsSplit(summary) {
   const L = layoutBase();
-  const nom = summary.nominal_par_B || 310;
-  const tips = summary.tips_par_B || 11;
+  const nom = summary.nominal_par_B ?? 310;
+  const tips = summary.tips_par_B ?? 11;
   Plotly.newPlot(
     "chart-tips-split",
     [

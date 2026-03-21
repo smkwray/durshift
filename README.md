@@ -4,7 +4,7 @@
 
 Research toolkit for analyzing how U.S. Treasury buyback operations redistribute duration across the yield curve.
 
-Since April 2024, the U.S. Treasury has conducted regular debt buyback operations totaling **$321B in par value** across **122 operations** and **301 unique CUSIPs**. DurShift processes the raw operation data into an analysis-ready panel and produces descriptive analytics on duration redistribution, dealer positioning, and yield curve impact.
+Since April 2024, the U.S. Treasury has conducted regular debt buyback operations totaling **$321B in par value** across **121 operation dates** and **301 unique CUSIPs**. DurShift processes the raw operation data into an analysis-ready panel and produces descriptive analytics on duration redistribution, dealer positioning, and yield curve impact.
 
 ---
 
@@ -26,13 +26,13 @@ The par/duration asymmetry is the central finding. Cash management operations re
 
 ### Yield curve impact
 
-Around buyback operations, front-end yields show modest declines (3M and 6M; see dashboard for confidence intervals and p-values). Longer tenors show smaller changes not clearly distinguishable from zero. The long end (20Y, 30Y) trends slightly positive.
+Around buyback operations, front-end yields show statistically significant declines at 1M, 3M, and 6M tenors, while the long end (20Y, 30Y) shows significant positive moves. Mid-curve tenors (1Y-10Y) are not distinguishable from zero. See the dashboard for confidence intervals and p-values.
 
 This pattern is consistent with cash management operations reducing short-dated supply while not mechanically suppressing long yields. However, these are simple averages, not causal estimates — most operations coincide with auction settlement dates, and 70 of 121 operations have another operation within ±5 days.
 
 ### Dealer positioning
 
-Primary dealers increase net Treasury coupon holdings by ~$7B on average around buyback operations, with the largest accumulation in the 7-11Y sector. Dealers increase positions across all maturity buckets.
+Primary dealers increase net Treasury coupon holdings by ~$7B on average around buyback operations, with the largest accumulation in the <2Y sector (+$3.0B). All maturity buckets show positive mean changes.
 
 ### TIPS vs nominal
 
