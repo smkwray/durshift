@@ -151,6 +151,7 @@ def test_generate_all_produces_expected_json(tmp_path: Path) -> None:
         "monthly_volume.json",
         "summary.json",
         "event_study.json",
+        "top_cusips.json",
     ]
     for fname in expected_files:
         assert (tmp_path / fname).exists(), f"Missing {fname}"
@@ -210,7 +211,29 @@ def test_generate_all_produces_expected_json(tmp_path: Path) -> None:
     # ── summary.json ──────────────────────────────────────────────
     summary = json.loads((tmp_path / "summary.json").read_text())
     assert isinstance(summary, dict)
-    assert "total_operations" in summary
-    assert "total_par_B" in summary
-    assert "total_duration_dollars_B" in summary
-    assert "unique_cusips" in summary
+    for key in [
+        "total_operations",
+        "total_par_B",
+        "total_duration_dollars_B",
+        "unique_cusips",
+        "nominal_par_B",
+        "tips_par_B",
+        "n_overlapping",
+        "date_range_start",
+        "date_range_end",
+    ]:
+        assert key in summary, f"summary.json missing {key}"
+    assert isinstance(summary["nominal_par_B"], (int, float))
+    assert isinstance(summary["tips_par_B"], (int, float))
+    assert isinstance(summary["n_overlapping"], int)
+    assert summary["nominal_par_B"] + summary["tips_par_B"] == summary["total_par_B"]
+
+    # ── top_cusips.json ────────────────────────────────────────────
+    top_cusips = json.loads((tmp_path / "top_cusips.json").read_text())
+    assert isinstance(top_cusips, list)
+    assert len(top_cusips) > 0
+    for item in top_cusips:
+        for key in ["cusip", "total_par_M", "n_operations", "security_type", "total_duration_M"]:
+            assert key in item, f"top_cusips missing {key}"
+        assert isinstance(item["total_par_M"], (int, float))
+        assert isinstance(item["n_operations"], int)

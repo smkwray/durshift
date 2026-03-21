@@ -48,7 +48,7 @@ For each buyback operation, DurShift downloads the official results XML from Tre
 
 **Modified duration** and **DV01** are computed using standard semiannual cashflow discounting. Duration-dollars are defined as market value (par × price / 100) × modified duration, which gives a measure of dollar-weighted interest-rate exposure removed from the market.
 
-**Event windows** compare primary dealer positions (NY Fed weekly data) and Treasury yields (H.15 daily) at exact calendar offsets before and after each operation date. Nearby gross issuance is estimated from Treasury auctions within a ±14 calendar day window — this measures total auction volume near each buyback, not matched replacement supply.
+**Event windows** compare primary dealer positions (NY Fed weekly data) and Treasury yields (H.15 daily) around each operation date. For each window endpoint (e.g. 5 calendar days before), the nearest available observation within a ±5 day tolerance is selected. Nearby gross issuance is estimated from Treasury auctions within a ±14 calendar day window — this measures total auction volume near each buyback, not matched replacement supply.
 
 **Classification** uses the stated operation type from TreasuryDirect (Cash Management, Liquidity Support, or Small Value). Maturity buckets follow a standard 5-bucket scheme: 0-2Y, 2-5Y, 5-10Y, 10-20Y, 20Y+.
 
