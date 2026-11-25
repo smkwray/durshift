@@ -53,3 +53,5 @@ outputs/reports/*
 !outputs/tables/.gitkeep
 !outputs/reports/.gitkeep
 uv.lock
+
+.private-denylist

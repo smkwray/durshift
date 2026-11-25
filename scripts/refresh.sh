@@ -3,7 +3,7 @@
 # Usage: bash scripts/refresh.sh
 set -euo pipefail
 
-P="${HOME}/venvs/DurShift/bin/python"
+P="${PYTHON:-python}"
 export PYTHONDONTWRITEBYTECODE=1
 
 echo "=== Fetching data sources ==="

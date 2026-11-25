@@ -2,9 +2,9 @@
 
 **[Live Dashboard](https://smkwray.github.io/durshift/)**
 
-Research toolkit for analyzing how U.S. Treasury buyback operations redistribute duration across the yield curve.
+DurShift is a research toolkit that measures how U.S. Treasury buyback operations redistribute duration (interest-rate exposure) across the yield curve.
 
-Since April 2024, the U.S. Treasury has conducted regular debt buyback operations totaling **$321B in par value** across **121 operation dates** and **301 unique CUSIPs**. DurShift processes the raw operation data into an analysis-ready panel and produces descriptive analytics on duration redistribution, dealer positioning, and yield curve impact.
+Since April 2024, the U.S. Treasury has conducted regular debt buyback operations totaling **$321B in par value** across **121 operation dates** and **301 unique CUSIPs** (the nine-character identifiers assigned to individual securities). DurShift turns the raw operation data into an analysis-ready panel and produces descriptive analytics on duration redistribution, dealer positioning, and yield curve impact. The results are descriptive, not causal estimates.
 
 ---
 
@@ -28,7 +28,7 @@ The par/duration asymmetry is the central finding. Cash management operations re
 
 Around buyback operations, front-end yields show statistically significant declines at 1M, 3M, and 6M tenors, while the long end (20Y, 30Y) shows significant positive moves. Mid-curve tenors (1Y-10Y) are not distinguishable from zero. See the dashboard for confidence intervals and p-values.
 
-This pattern is consistent with cash management operations reducing short-dated supply while not mechanically suppressing long yields. However, these are simple averages, not causal estimates — most operations coincide with auction settlement dates, and 70 of 121 operations have another operation within ±5 days.
+This pattern is consistent with cash management operations reducing short-dated supply while not mechanically suppressing long yields. These are simple averages: most operations coincide with auction settlement dates, and 70 of 121 operations have another operation within ±5 days.
 
 ### Dealer positioning
 
@@ -36,19 +36,19 @@ Primary dealers increase net Treasury coupon holdings by ~$7B on average around 
 
 ### TIPS vs nominal
 
-Nominal coupons dominate at 97% of par ($310B / 963 securities). TIPS buybacks ($11B / 202 securities) are smaller but carry higher duration per dollar of par due to lower real yields.
+Nominal coupons dominate at 97% of par ($310B / 963 securities). Buybacks of Treasury Inflation-Protected Securities (TIPS) are smaller ($11B / 202 securities) but carry higher duration per dollar of par due to lower real yields.
 
 ---
 
 ## Method
 
-For each buyback operation, DurShift downloads the official results XML from TreasuryDirect, extracting per-CUSIP accepted par amounts, weighted average accepted prices, coupon rates, and maturity dates.
+For each buyback operation, DurShift downloads the official buyback results (BBR) XML file from TreasuryDirect and extracts per-CUSIP accepted par amounts, weighted average accepted prices, coupon rates, and maturity dates.
 
-**Yield proxies** are interpolated from the Federal Reserve H.15 constant maturity term structure — nominal CMT rates for coupon securities, real CMT rates for TIPS (which can be negative). The interpolation uses linear weighting between the two nearest tenor points.
+**Yield proxies** are interpolated from the constant maturity Treasury (CMT) yields in the Federal Reserve's H.15 release: nominal CMT rates for coupon securities, real CMT rates for TIPS (which can be negative). The interpolation weights linearly between the two nearest tenor points.
 
-**Modified duration** and **DV01** are computed using standard semiannual cashflow discounting. Duration-dollars are defined as market value (par × price / 100) × modified duration, which gives a measure of dollar-weighted interest-rate exposure removed from the market.
+**Modified duration** and **DV01** (dollar value of a one-basis-point yield change) are computed using standard semiannual cashflow discounting. Duration-dollars are market value (par × price / 100) × modified duration, a measure of the dollar-weighted interest-rate exposure removed from the market.
 
-**Event windows** compare primary dealer positions (NY Fed weekly data) and Treasury yields (H.15 daily) around each operation date. For each window endpoint (e.g. 5 calendar days before), the nearest available observation within a ±5 day tolerance is selected. Nearby gross issuance is estimated from Treasury auctions within a ±14 calendar day window — this measures total auction volume near each buyback, not matched replacement supply.
+**Event windows** compare primary dealer positions (New York Fed weekly data) and Treasury yields (H.15 daily) around each operation date. For each window endpoint (for example, 5 calendar days before), the nearest available observation within a ±5 day tolerance is selected. Nearby gross issuance is estimated from Treasury auctions within a ±14 calendar day window; it measures total auction volume near each buyback, not matched replacement supply.
 
 **Classification** uses the stated operation type from TreasuryDirect (Cash Management, Liquidity Support, or Small Value). Maturity buckets follow a standard 5-bucket scheme: 0-2Y, 2-5Y, 5-10Y, 10-20Y, 20Y+.
 
@@ -61,76 +61,48 @@ For each buyback operation, DurShift downloads the official results XML from Tre
 | Buyback results | TreasuryDirect | BBR XML per operation | 3,917 |
 | Buyback schedule | Treasury.gov | Public XML | 21 |
 | Treasury auctions | Fiscal Data API | REST JSON | 2,733 |
-| TIPS/FRN auctions | TreasuryDirect TA_WS | REST JSON | 151 |
+| TIPS and floating rate note (FRN) auctions | TreasuryDirect TA_WS | REST JSON | 151 |
 | Treasury yields | Federal Reserve Board | H.15 CSV + bulk XML | 1,617 |
 | TIPS real yields | Federal Reserve Board | H.15 bulk XML | 6,551 |
 | Dealer positions | NY Fed Markets API | CSV per series | 675 |
-| SOMA holdings | NY Fed Markets API | CSV summary | 1,184 |
+| System Open Market Account (SOMA) holdings | NY Fed Markets API | CSV summary | 1,184 |
 
-All data is from official U.S. government public sources. No authentication or API keys required. The buyback results scraper uses Playwright to discover operation URLs from TreasuryDirect, then downloads individual BBR XML files directly.
+All data are from official U.S. government public sources, and no API keys are required. The buyback results fetcher uses Playwright (a headless browser) to discover operation URLs on TreasuryDirect, then downloads each BBR XML file directly.
 
 ---
 
 ## Quick Start
 
+Requires Python 3.11+ and Node.js (the refresh script also builds the dashboard).
+
 ```bash
-# 1. Create virtualenv (never inside the repo)
-uv venv ~/venvs/DurShift --python 3.11
-P="$HOME/venvs/DurShift/bin/python"
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e ".[dev]"
+playwright install chromium     # needed to fetch buyback results
 
-# 2. Install (playwright needed for buyback scraping)
-$P -m pip install -e ".[dev]"
-$P -m playwright install chromium
-
-# 3. Fetch all data sources
-$P -B -m durshift.cli fetch-auctions --output data/raw/treasury_auctions.csv
-$P -B -m durshift.cli fetch-tips-frn-auctions --output data/raw/tips_frn_auctions.csv
-$P -B -m durshift.cli fetch-h15-rates --output data/raw/h15_rates.csv
-$P -B -m durshift.cli fetch-tips-real-yields --output data/raw/tips_real_yields.csv
-$P -B -m durshift.cli fetch-dealer-positions --output data/raw/dealer_positions.csv
-$P -B -m durshift.cli fetch-soma-holdings --output data/raw/soma_holdings.csv
-$P -B -m durshift.cli fetch-buyback-schedule \
-    --xml-output data/raw/buyback_schedule.xml \
-    --csv-output data/interim/buyback_schedule.csv
-$P -B -m durshift.cli fetch-buyback-results \
-    --index-output data/raw/buyback_operations_index.json \
-    --csv-output data/raw/buyback_results_detail.csv
-
-# 4. Build the operation panel
-$P -B -m durshift.cli build-real-panel \
-    --input data/raw/buyback_results_detail.csv \
-    --output data/processed/real_operation_panel.csv \
-    --h15-rates data/raw/h15_rates.csv \
-    --tips-yields data/raw/tips_real_yields.csv
-
-# 5. Generate outputs + site data
-$P -B -m durshift.cli build-duration-summary \
-    --input data/processed/real_operation_panel.csv \
-    --output outputs/tables/real_duration_summary.csv
-$P -B scripts/generate_site_data.py
-
-# Or just: bash scripts/refresh.sh
+bash scripts/refresh.sh         # fetch all sources, build the panel, outputs, and site data
 ```
 
-## Interactive Dashboard
+`scripts/refresh.sh` runs each stage through `durshift.cli` (`python -m durshift.cli <command>`), so you can also run individual fetch and build stages on their own.
 
-**[https://smkwray.github.io/durshift/](https://smkwray.github.io/durshift/)**
-
-8 interactive Plotly charts with dark/light theme toggle, summary statistics, chart captions, and full methodology. To run locally:
+To run the dashboard locally:
 
 ```bash
 cd site && npm install && npm run dev
 ```
 
+The dashboard has 8 interactive Plotly charts with a dark/light theme toggle, summary statistics, chart captions, and the full methodology.
+
 ## Architecture
 
 ```
 src/durshift/
-  data/           # 8 source clients (Fiscal Data, TreasuryDirect, Fed Board, NY Fed)
+  data/           # Source clients (Fiscal Data, TreasuryDirect, Fed Board, NY Fed)
   panels/         # Panel assembly (operations, financing context, dealer pressure)
   analytics/      # Classification, duration, event windows, duration accounting
   reporting/      # Charts and summary tables
-  cli.py          # 12 CLI commands
+  cli.py          # Command-line entry point
 scripts/
   refresh.sh      # Full pipeline: fetch → build → site
   generate_site_data.py  # JSON generation for dashboard
@@ -140,9 +112,9 @@ site/             # Vite + Plotly.js static dashboard
 ## Validation
 
 ```bash
-"$HOME/venvs/DurShift/bin/python" scripts/verify_repo_readiness.py
-PYTHONDONTWRITEBYTECODE=1 "$HOME/venvs/DurShift/bin/python" -B -m pytest -q  # 76 tests
-"$HOME/venvs/DurShift/bin/ruff" check .
+python scripts/verify_repo_readiness.py
+pytest -q
+ruff check .
 ```
 
 ## Limitations
